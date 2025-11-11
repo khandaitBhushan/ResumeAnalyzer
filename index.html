@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analysis Suite</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-file-alt"></i> Resume Analysis Suite</h1>
+            <p>AI-powered resume analysis and ATS compatibility checking</p>
+        </header>
+
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="resume-analyzer">
+                <i class="fas fa-chart-line"></i> Resume Analyzer
+            </button>
+            <button class="tab-btn" data-tab="ats-check">
+                <i class="fas fa-check-circle"></i> ATS Check
+            </button>
+        </nav>
+
+        <main>
+            <!-- Resume Analyzer Tab -->
+            <div id="resume-analyzer" class="tab-content active">
+                <div class="upload-section">
+                    <div class="upload-area" id="resumeUploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-upload"></i>
+                        </div>
+                        <h3>Drop your resume here or click to browse</h3>
+                        <p>Supports PDF, DOC, DOCX, TXT files (Max 5MB)</p>
+                        <input type="file" id="resumeFileInput" accept=".pdf,.doc,.docx,.txt" hidden>
+                        <button class="browse-btn" onclick="document.getElementById('resumeFileInput').click()">
+                            <i class="fas fa-folder-open"></i> Browse Files
+                        </button>
+                    </div>
+                    <div class="file-info" id="resumeFileInfo" style="display: none;">
+                        <span id="resumeFileName"></span>
+                        <button class="remove-btn" onclick="removeResumeFile()">×</button>
+                    </div>
+                </div>
+
+                <button class="analyze-btn" id="resumeAnalyzeBtn" disabled onclick="analyzeResume()">
+                    <i class="fas fa-magic"></i> Analyze Resume
+                </button>
+
+                <div class="loading" id="resumeLoading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing your resume structure and content...</p>
+                </div>
+
+                <div class="results-section" id="resumeResultsSection" style="display: none;">
+                    <h2><i class="fas fa-chart-bar"></i> Resume Analysis Results</h2>
+                    
+                    <!-- Overall Score -->
+                    <div class="score-card">
+                        <h3>Overall Resume Score</h3>
+                        <div class="score-display">
+                            <span class="score" id="resumeOverallScore">0</span>/5
+                        </div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="resumeScoreFill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Candidate Info -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-user"></i> Candidate Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Name:</label>
+                                <span id="candidateName">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Expected Role:</label>
+                                <span id="expectedRole">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="skills-section">
+                        <h3><i class="fas fa-code"></i> Technical Skills</h3>
+                        <div class="skills-grid">
+                            <div class="skill-category">
+                                <h4>Primary Skills</h4>
+                                <div class="skills-container" id="primarySkills">
+                                    <!-- Primary skills will be populated here -->
+                                </div>
+                            </div>
+                            <div class="skill-category">
+                                <h4>Secondary Skills</h4>
+                                <div class="skills-container" id="secondarySkills">
+                                    <!-- Secondary skills will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Scores -->
+                    <div class="scores-section">
+                        <h3><i class="fas fa-star"></i> Section Scores</h3>
+                        <div class="scores-grid" id="sectionScores">
+                            <!-- Section scores will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- File Naming Check -->
+                    <div class="naming-check">
+                        <h3><i class="fas fa-file-signature"></i> File Naming Check</h3>
+                        <div class="naming-status" id="namingStatus">
+                            <!-- Naming status will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Improvements -->
+                    <div class="improvements-section">
+                        <h3><i class="fas fa-lightbulb"></i> Improvement Suggestions</h3>
+                        <div class="suggestions-container" id="resumeImprovements">
+                            <!-- Improvements will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ATS Check Tab -->
+            <div id="ats-check" class="tab-content">
+                <div class="upload-section">
+                    <div class="upload-area" id="atsUploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <h3>Upload Resume for ATS Check</h3>
+                        <p>Supports PDF, DOC, DOCX, TXT files (Max 5MB)</p>
+                        <input type="file" id="atsFileInput" accept=".pdf,.doc,.docx,.txt" hidden>
+                        <button class="browse-btn" onclick="document.getElementById('atsFileInput').click()">
+                            <i class="fas fa-folder-open"></i> Browse Files
+                        </button>
+                    </div>
+                    <div class="file-info" id="atsFileInfo" style="display: none;">
+                        <span id="atsFileName"></span>
+                        <button class="remove-btn" onclick="removeAtsFile()">×</button>
+                    </div>
+
+                    <div class="job-description-section">
+                        <h3><i class="fas fa-briefcase"></i> Job Description</h3>
+                        <textarea id="jobDescription" placeholder="Paste the job description here..."></textarea>
+                    </div>
+                </div>
+
+                <button class="analyze-btn" id="atsAnalyzeBtn" disabled onclick="checkATS()">
+                    <i class="fas fa-search"></i> Check ATS Compatibility
+                </button>
+
+                <div class="loading" id="atsLoading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing ATS compatibility and role fit...</p>
+                </div>
+
+                <div class="results-section" id="atsResultsSection" style="display: none;">
+                    <h2><i class="fas fa-chart-pie"></i> ATS Analysis Results</h2>
+                    
+                    <!-- ATS Score -->
+                    <div class="score-card">
+                        <h3>ATS Compatibility Score</h3>
+                        <div class="score-display">
+                            <span class="score" id="atsScore">0</span>/100
+                        </div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="atsScoreFill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Candidate & Role Info -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-user-tie"></i> Role Fit Analysis</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Candidate:</label>
+                                <span id="atsCandidateName">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Predicted Role:</label>
+                                <span id="predictedRole">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Skills Match Score:</label>
+                                <span id="skillsMatchScore">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Technical Fit -->
+                    <div class="technical-fit">
+                        <h3><i class="fas fa-cogs"></i> Technical Fit Assessment</h3>
+                        <p id="technicalFitComment">-</p>
+                    </div>
+
+                    <!-- Summary Fit -->
+                    <div class="summary-fit">
+                        <h3><i class="fas fa-clipboard-check"></i> Summary Fit Feedback</h3>
+                        <p id="summaryFitFeedback">-</p>
+                    </div>
+
+                    <!-- Keywords Analysis -->
+                    <div class="keywords-section">
+                        <div class="keywords-grid">
+                            <div class="keyword-category">
+                                <h4><i class="fas fa-check"></i> Matched Keywords</h4>
+                                <div class="keywords-container" id="matchedKeywords">
+                                    <!-- Matched keywords will be populated here -->
+                                </div>
+                            </div>
+                            <div class="keyword-category">
+                                <h4><i class="fas fa-times"></i> Missing Keywords</h4>
+                                <div class="keywords-container" id="missingKeywords">
+                                    <!-- Missing keywords will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="recommendations-section">
+                        <h3><i class="fas fa-rocket"></i> Recommendations</h3>
+                        <div class="suggestions-container" id="atsRecommendations">
+                            <!-- Recommendations will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error-message" id="errorMessage" style="display: none;"></div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
